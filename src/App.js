@@ -6,7 +6,7 @@ import { AppStyleForHome } from './style';
 
 const web3 = new Web3(window.ethereum);
 const contractAddress2 = '0x37cc74373a7DC32f8CDcdAe96D2f675B4F07dE05'
-const ABI2 = [
+const ABI = [
   {
     "anonymous": false,
     "inputs": [
@@ -918,8 +918,215 @@ const ABI2 = [
     "type": "receive"
   }
 ]
-
-const contract = new web3.eth.Contract(ABI2, contractAddress2);
+const airdropContractAddress = '0x77560D0ca1648F5eD38846454149017BcC876691'
+const ABI2 = [
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "TokensAirdropped",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "airdropAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "airdropWallet",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getRemainingAirdropBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_airdropWallet",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "recipients",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "numberOfRecipients",
+        "type": "uint256"
+      }
+    ],
+    "name": "performAirdrop",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_airdropWallet",
+        "type": "address"
+      }
+    ],
+    "name": "setAirDropWallet",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "setAirdropAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "token",
+    "outputs": [
+      {
+        "internalType": "contract IERC20Upgradeable",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
+const contract = new web3.eth.Contract(ABI, contractAddress2);
+const airdropContract =  new web3.eth.Contract(ABI2 , airdropContractAddress)
 
 
 function App() {
@@ -939,8 +1146,21 @@ function App() {
   const [burnTokens, setBurnTokens] = useState('');
   const [getTaxExemptedAddress, setGetTaxExemptedAddress] = useState('');
   const [getDistributorAddress, setGetDistributorAddress] = useState('');
+  const [airdropAmount, setAirdropAmount] = useState('');
+  const [performAirdropAddress, setPerformAirdropAddress] = useState('');
+  const [airdropWallet, setAirdropWallet] = useState('');
 
+  const handleAirdropAmountAddress = (e) => {
+    setAirdropAmount(e.target.value);
+  };
 
+  const handleAirdropWalletAddress = (e) => {
+    setAirdropWallet(e.target.value);
+  };
+
+  const handlePerformAirdropAmountAddress = (e) => {
+    setPerformAirdropAddress(e.target.value);
+  };
   
   const handleAddTaxExemptedAddressChange = (e) => {
     setAddTaxExemptedAddress(e.target.value);
@@ -1401,6 +1621,90 @@ function App() {
     }
   }
 
+  async function getRemainingAirdropBalance() {
+    try {
+      const txData = await airdropContract.methods.getRemainingAirdropBalance().call();
+      alert(`The remaining Air Drop balance is ${txData} WCT`)
+    } catch (e) {
+      alert("Transaction has been failed. Please Check Your Input")
+    }
+  }
+
+  async function getAirdropAmountContract() {
+    try {
+      const txData = await airdropContract.methods.airdropAmount().call();
+      alert(`The current Air Drop Amount is ${web3.utils.fromWei(txData , 'ether')} WCT`)
+    } catch (e) {
+      alert("Transaction has been failed. Please Check Your Input")
+    }
+  }
+
+  async function getAirdropWalletContract() {
+    try {
+      const txData = await airdropContract.methods.airdropWallet().call();
+      alert(`The current Air Drop Wallet Address is ${txData}`)
+    } catch (e) {
+      alert("Transaction has been failed. Please Check Your Input")
+    }
+  }
+
+  async function setAirdropAmountContract() {
+    try {
+      let amount = airdropAmount * 10 ** 18
+      const connect = await connectMetaMask();
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const userAddress = accounts[0];
+      const txData = await airdropContract.methods.setAirdropAmount(amount.toString()).send({from : userAddress});
+      if (txData.status == 1) {
+        alert("Transaction has been succesful")
+      } else {
+        alert("Transaction FAILED")
+      }
+    } catch (e) {
+      alert("Transaction has been failed. Please Check Your Input")
+    }
+  }
+
+  async function performAirdropAmountContract() {
+    try {
+
+      const connect = await connectMetaMask();
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const userAddress = accounts[0];
+      const txData = await airdropContract.methods.performAirdrop(performAirdropAddress , '1' ).send({from : userAddress});
+      if (txData.status == 1) {
+        alert("Transaction has been succesful")
+      } else {
+        alert("Transaction FAILED")
+      }
+    } catch (e) {
+      alert("Transaction has been failed. Please Check Your Input")
+    }
+  }
+
+  async function setAirdropWalletContract() {
+    try {
+
+      const connect = await connectMetaMask();
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const userAddress = accounts[0];
+      const txData = await airdropContract.methods.setAirDropWallet(airdropWallet).send({from : userAddress});
+      if (txData.status == 1) {
+        alert("Transaction has been succesful")
+      } else {
+        alert("Transaction FAILED")
+      }
+    } catch (e) {
+      alert("Transaction has been failed. Please Check Your Input")
+    }
+  }
+
   return <>
   <AppStyleForHome>
     <h2> Connect MetaMask</h2>
@@ -1489,6 +1793,30 @@ function App() {
     <br></br>
     <input value={burnTokens} onChange={handleBurnTokens} className="wide-input" placeholder='Token Amount to Burn'/>
     <button onClick={burnTokensContract} className='button' >burnTokensContract</button>
+    <br></br>
+
+    <h2> Air Drop Functions</h2>
+
+    <button onClick={getRemainingAirdropBalance} className='button' > Remaining Air Drop Balance</button>
+    <button onClick={getAirdropAmountContract} className='button' > Current Air Drop Amount</button>
+    <button onClick={getAirdropWalletContract} className='button' > Current Air Drop Wallet Address</button>
+
+    <br></br>
+
+    <br></br>
+    <input value={airdropAmount} onChange={handleAirdropAmountAddress} className="wide-input" placeholder='Set Airdrop Amount'/>
+    <button onClick={setAirdropAmountContract} className='button' >Set Airdrop Amount</button>
+    <br></br>
+
+    <br></br>
+    <input value={airdropWallet} onChange={handleAirdropWalletAddress} className="wide-input" placeholder='Set Airdrop Wallet Address'/>
+    <button onClick={setAirdropWalletContract} className='button' >Set Airdrop Wallet</button>
+    <br></br>
+
+    <br></br>
+    <input value={performAirdropAddress} onChange={handlePerformAirdropAmountAddress} className="wide-input" placeholder='Set Airdrop Address'/>
+    <button onClick={performAirdropAmountContract} className='button' >Perform Airdrop</button>
+
     <br></br>
     </AppStyleForHome>
   </>
