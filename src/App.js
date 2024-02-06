@@ -5,9 +5,8 @@ import { useEffect, useState } from 'react';
 import { AppStyleForHome } from './style';
 
 const web3 = new Web3(window.ethereum);
-
-const contractAddress = "0x0ddEED958a6B1d31E2F797Df842a869BE9D890D1";
-const ABI = [
+const contractAddress2 = '0x37cc74373a7DC32f8CDcdAe96D2f675B4F07dE05'
+const ABI2 = [
   {
     "anonymous": false,
     "inputs": [
@@ -84,7 +83,13 @@ const ABI = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "TaxRate",
+        "name": "teamTaxRate",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "devTaxRate",
         "type": "uint256"
       }
     ],
@@ -97,7 +102,13 @@ const ABI = [
       {
         "indexed": false,
         "internalType": "address",
-        "name": "TAX_RECEIVER",
+        "name": "TEAM_WALLET",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "DEV_WALLET",
         "type": "address"
       }
     ],
@@ -187,12 +198,12 @@ const ABI = [
   },
   {
     "inputs": [],
-    "name": "MAX_WALLET_SIZE",
+    "name": "DEV_WALLET",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "address",
         "name": "",
-        "type": "uint256"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -200,12 +211,12 @@ const ABI = [
   },
   {
     "inputs": [],
-    "name": "TAX_RECEIVER",
+    "name": "MAX_WALLET_SIZE",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "uint256",
         "name": "",
-        "type": "address"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -395,6 +406,19 @@ const ABI = [
   },
   {
     "inputs": [],
+    "name": "devTaxRate",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "dexRouterAddress",
     "outputs": [
       {
@@ -448,6 +472,11 @@ const ABI = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -459,7 +488,7 @@ const ABI = [
     "outputs": [
       {
         "internalType": "address",
-        "name": "_TAX_RECEIVER",
+        "name": "_TEAM_WALLET",
         "type": "address"
       }
     ],
@@ -522,7 +551,12 @@ const ABI = [
       },
       {
         "internalType": "uint256",
-        "name": "_taxRate",
+        "name": "_teamTaxRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_devTaxRate",
         "type": "uint256"
       },
       {
@@ -709,7 +743,12 @@ const ABI = [
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_taxRate",
+        "name": "_teamTaxRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_devTaxRate",
         "type": "uint256"
       }
     ],
@@ -722,7 +761,12 @@ const ABI = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "_taxReceiver",
+        "name": "_teamWallet",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_devWallet",
         "type": "address"
       }
     ],
@@ -759,7 +803,7 @@ const ABI = [
   },
   {
     "inputs": [],
-    "name": "taxRate",
+    "name": "teamTaxRate",
     "outputs": [
       {
         "internalType": "uint256",
@@ -873,9 +917,9 @@ const ABI = [
     "stateMutability": "payable",
     "type": "receive"
   }
-];
+]
 
-const contract = new web3.eth.Contract(ABI, contractAddress);
+const contract = new web3.eth.Contract(ABI2, contractAddress2);
 
 
 function App() {
@@ -885,11 +929,13 @@ function App() {
   const [taxDistributorAddress, setTaxDistributorAddress] = useState('');
   const [removeTaxDistributorAddress, setRemoveTaxDistributorAddress] = useState('');
   const [maxWalletSize, setMaxWalletSize] = useState('');
-  const [taxRate, setTaxRate] = useState('');
+  const [taxRate1, setTaxRate1] = useState('');
+  const [taxRate2, setTaxRate2] = useState('');
   const [dexRouterAddress, setDexRouterAddress] = useState('');
   const [dexPairAddress, setDexPairAddress] = useState('');
   const [transactionLimit, setTransactionLimit] = useState('');
-  const [taxReceiver, setTaxReceiver] = useState('');
+  const [taxReceiver1, setTaxReceiver1] = useState('');
+  const [taxReceiver2, setTaxReceiver2] = useState('');
   const [burnTokens, setBurnTokens] = useState('');
   const [getTaxExemptedAddress, setGetTaxExemptedAddress] = useState('');
   const [getDistributorAddress, setGetDistributorAddress] = useState('');
@@ -916,8 +962,12 @@ function App() {
     setMaxWalletSize(e.target.value);
   };
 
-  const handleSetTaxRate = (e) => {
-    setTaxRate(e.target.value);
+  const handleSetTaxRate1 = (e) => {
+    setTaxRate1(e.target.value);
+  };
+
+  const handleSetTaxRate2 = (e) => {
+    setTaxRate2(e.target.value);
   };
 
   const handleSetDexRouterAddress = (e) => {
@@ -932,8 +982,11 @@ function App() {
     setTransactionLimit(e.target.value);
   };
   
-  const handleSetTaxReceiver = (e) => {
-    setTaxReceiver(e.target.value);
+  const handleSetTaxReceiver1 = (e) => {
+    setTaxReceiver1(e.target.value);
+  };
+  const handleSetTaxReceiver2 = (e) => {
+    setTaxReceiver2(e.target.value);
   };
 
   const handleBurnTokens = (e) => {
@@ -1133,15 +1186,16 @@ function App() {
 
   async function setTaxRateContract() {
     try {
-      let tax = Math.round(taxRate * 10)
-      console.log(tax)
+      let tax1 = Math.round(taxRate1 * 10)
+      let tax2 = Math.round(taxRate2 * 10)
+      console.log(tax1 ,tax2)
       const connect = await connectMetaMask();
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
       const userAddress = accounts[0];
       console.log(userAddress)
-      const txData = await contract.methods.setTaxRate(tax).send({ from: userAddress });
+      const txData = await contract.methods.setTaxRate(tax1, tax2).send({ from: userAddress });
       if (txData.status == 1) {
         alert("Transaction has been succesful")
       }
@@ -1222,14 +1276,14 @@ function App() {
 
   async function setTaxReceiverContract() {
     try {
-      console.log(taxReceiver)
+      console.log(taxReceiver1, taxReceiver2)
       const connect = await connectMetaMask();
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
       const userAddress = accounts[0];
       console.log(userAddress)
-      const txData = await contract.methods.setTaxReceiver(taxReceiver).send({ from: userAddress });
+      const txData = await contract.methods.setTaxReceiver(taxReceiver1, taxReceiver2).send({ from: userAddress });
       if (txData.status == 1) {
         alert("Transaction has been succesful")
       } else {
@@ -1264,8 +1318,10 @@ function App() {
   async function getTaxRateContract() {
     try {
       const txData = await contract.methods.getTaxRate().call();
-      let data = parseFloat(txData)
-      alert(`The current Tax Rate is ${data / 10} %`)
+      let data1 = parseFloat(txData[0])
+      let data2 = parseFloat(txData[1])
+
+      alert(`The current TEAM Tax Rate is ${data1 / 10} % and current DEV Tax Rate is ${data2 / 10} %`)
     } catch (e) {
       alert("Transaction has been failed. Please Check Your Input")
     }
@@ -1273,8 +1329,10 @@ function App() {
 
   async function getTaxRecieversContract() {
     try {
-      const txData = await contract.methods.getTaxRecievers().call();
-      alert(`The current Tax Receiver address is ${txData}`)
+      const txData1 = await contract.methods.getTaxRecievers().call();
+      const txData2 = await contract.methods.DEV_WALLET().call();
+
+      alert(`The current TEAM Tax Receiver address is ${txData1} and current DEV Tax Receiver address is ${txData2}`)
     } catch (e) {
       alert("Transaction has been failed. Please Check Your Input")
     }
@@ -1343,12 +1401,6 @@ function App() {
     }
   }
 
-
-
-
-
-  
-
   return <>
   <AppStyleForHome>
     <h2> Connect MetaMask</h2>
@@ -1367,18 +1419,14 @@ function App() {
     <br></br>
 
     <br></br>
-    <input value={getTaxExemptedAddress} onChange={handleGetTaxExemptedAddressChange} className="wide-input" />
+    <input value={getTaxExemptedAddress} onChange={handleGetTaxExemptedAddressChange} className="wide-input" placeholder='Tax Exempted Address'/>
     <button onClick={getTaxExemptedAddressContract} className='button' > Is Tax Exempted</button>
     <br></br>
    
     <br></br>
-    <input value={getDistributorAddress} onChange={handleGetDistributorAddressChange} className="wide-input" />
+    <input value={getDistributorAddress} onChange={handleGetDistributorAddressChange} className="wide-input" placeholder='Distributor Address'/>
     <button onClick={getDistributorAddressContract} className='button' > Is Distributor</button>
 
-
-
-
-    
     <h2> Setter/OnlyOwner Functions</h2>
     <button onClick={pauseContract} className='button' > Pause Contract</button>
     <button onClick={unPauseContract} className='button' > UnPause Contract</button>
@@ -1387,57 +1435,59 @@ function App() {
     <br></br>
 
     <br></br>
-    <input value={addTaxExemptedAddress} onChange={handleAddTaxExemptedAddressChange} className="wide-input" />
+    <input value={addTaxExemptedAddress} onChange={handleAddTaxExemptedAddressChange} className="wide-input" placeholder='Add Tax Exempted Address'/>
     <button onClick={addTaxExemptedAddressContract} className='button' >addTaxExemptedAddress</button>
     <br></br>
 
     <br></br>
-    <input value={removeTaxExemptedAddress} onChange={handleRemoveTaxExemptedAddress} className="wide-input"/>
+    <input value={removeTaxExemptedAddress} onChange={handleRemoveTaxExemptedAddress} className="wide-input" placeholder='Remove Tax Exempted Address'/>
     <button onClick={removeTaxExemptedAddressContract} className='button' >removeTaxExemptedAddress</button>
     <br></br>
 
     <br></br>
-    <input value={taxDistributorAddress} onChange={handleTaxDistributorAddress} className="wide-input"/>
+    <input value={taxDistributorAddress} onChange={handleTaxDistributorAddress} className="wide-input" placeholder='Add Distributor Address'/>
     <button onClick={addTaxDistributorAddressContract} className='button' >addTaxDistributorAddress</button>
     <br></br>
 
     <br></br>
-    <input value={removeTaxDistributorAddress} onChange={handleRemoveTaxDistributorAddress} className="wide-input"/>
+    <input value={removeTaxDistributorAddress} onChange={handleRemoveTaxDistributorAddress} className="wide-input" placeholder='Remove Distributor Address'/>
     <button onClick={removeTaxDistributorAddressContract} className='button' >removeTaxDistributorAddress</button>
     <br></br>
 
     <br></br>
-    <input value={maxWalletSize} onChange={handleMaxWalletSize} className="wide-input"/>
+    <input value={maxWalletSize} onChange={handleMaxWalletSize} className="wide-input" placeholder='Wallet Size'/>
     <button onClick={maxWalletSizeContract} className='button' >maxWalletSize</button>
     <br></br>
 
     <br></br>
-    <input value={taxRate} onChange={handleSetTaxRate} className="wide-input"/>
+    <input value={taxRate1} onChange={handleSetTaxRate1} className="wide-input" placeholder='Team Tax Rate'/>
+    <input value={taxRate2} onChange={handleSetTaxRate2} className="wide-input" placeholder='Dev Tax Rate'/>
     <button onClick={setTaxRateContract} className='button' >setTaxRate</button>
     <br></br>
 
     <br></br>
-    <input value={dexRouterAddress} onChange={handleSetDexRouterAddress} className="wide-input" />
+    <input value={dexRouterAddress} onChange={handleSetDexRouterAddress} className="wide-input" placeholder='Dex Router Address'/>
     <button onClick={setDexRouterAddressContract} className='button' >setDexRouterAddressContract</button>
     <br></br>
 
     <br></br>
-    <input value={dexPairAddress} onChange={handleSetDexPairAddress} className="wide-input"/>
+    <input value={dexPairAddress} onChange={handleSetDexPairAddress} className="wide-input" placeholder='Dex Pair Address'/>
     <button onClick={setDexPairAddressContract} className='button' >setDexPairAddressContract</button>
     <br></br>
 
     <br></br>
-    <input value={transactionLimit} onChange={handleSetTransactionLimit} className="wide-input"/>
+    <input value={transactionLimit} onChange={handleSetTransactionLimit} className="wide-input" placeholder='Set Transaction Limit'/>
     <button onClick={setTransactionLimitContract} className='button' >setTransactionLimitContract</button>
     <br></br>
 
     <br></br>
-    <input value={taxReceiver} onChange={handleSetTaxReceiver} className="wide-input"/>
+    <input value={taxReceiver1} onChange={handleSetTaxReceiver1} className="wide-input" placeholder='Team Tax Receiver Address'/>
+    <input value={taxReceiver2} onChange={handleSetTaxReceiver2} className="wide-input" placeholder='Dev Tax Receiver Address'/>
     <button onClick={setTaxReceiverContract} className='button' >setTaxReceiverContract</button>
     <br></br>
 
     <br></br>
-    <input value={burnTokens} onChange={handleBurnTokens} className="wide-input"/>
+    <input value={burnTokens} onChange={handleBurnTokens} className="wide-input" placeholder='Token Amount to Burn'/>
     <button onClick={burnTokensContract} className='button' >burnTokensContract</button>
     <br></br>
     </AppStyleForHome>
