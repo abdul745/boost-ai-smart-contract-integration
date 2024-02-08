@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import { AppStyleForHome } from './style';
 
 const web3 = new Web3(window.ethereum);
-const contractAddress2 = '0x37cc74373a7DC32f8CDcdAe96D2f675B4F07dE05'
-const ABI = [
+const tokenContractAddress = '0x37cc74373a7DC32f8CDcdAe96D2f675B4F07dE05'
+const tokenContractABI = [
   {
     "anonymous": false,
     "inputs": [
@@ -919,7 +919,7 @@ const ABI = [
   }
 ]
 const airdropContractAddress = '0x77560D0ca1648F5eD38846454149017BcC876691'
-const ABI2 = [
+const airdropContractABI = [
   {
     "anonymous": false,
     "inputs": [
@@ -1125,8 +1125,8 @@ const ABI2 = [
     "type": "function"
   }
 ]
-const contract = new web3.eth.Contract(ABI, contractAddress2);
-const airdropContract =  new web3.eth.Contract(ABI2 , airdropContractAddress)
+const contract = new web3.eth.Contract(tokenContractABI, tokenContractAddress);
+const airdropContract =  new web3.eth.Contract(airdropContractABI , airdropContractAddress)
 
 
 function App() {
@@ -1138,8 +1138,6 @@ function App() {
   const [maxWalletSize, setMaxWalletSize] = useState('');
   const [taxRate1, setTaxRate1] = useState('');
   const [taxRate2, setTaxRate2] = useState('');
-  const [dexRouterAddress, setDexRouterAddress] = useState('');
-  const [dexPairAddress, setDexPairAddress] = useState('');
   const [transactionLimit, setTransactionLimit] = useState('');
   const [taxReceiver1, setTaxReceiver1] = useState('');
   const [taxReceiver2, setTaxReceiver2] = useState('');
@@ -1188,14 +1186,6 @@ function App() {
 
   const handleSetTaxRate2 = (e) => {
     setTaxRate2(e.target.value);
-  };
-
-  const handleSetDexRouterAddress = (e) => {
-    setDexRouterAddress(e.target.value);
-  };
-
-  const handleSetDexPairAddress = (e) => {
-    setDexPairAddress(e.target.value);
   };
 
   const handleSetTransactionLimit = (e) => {
@@ -1424,46 +1414,6 @@ function App() {
     }
   }
 
-  async function setDexRouterAddressContract() {
-    try {
-      console.log(dexRouterAddress)
-      const connect = await connectMetaMask();
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      const userAddress = accounts[0];
-      console.log(userAddress)
-      const txData = await contract.methods.setDexRouterAddress(dexRouterAddress).send({ from: userAddress });
-      if (txData.status == 1) {
-        alert("Transaction has been succesful")
-      } else {
-        alert("Transaction FAILED")
-      }
-    } catch (e) {
-      alert("Transaction has been failed. Please Check Your Input")
-    }
-  }
-
-  async function setDexPairAddressContract() {
-    try {
-      console.log(dexPairAddress)
-      const connect = await connectMetaMask();
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      const userAddress = accounts[0];
-      console.log(userAddress)
-      const txData = await contract.methods.setDexPairAddress(dexPairAddress).send({ from: userAddress });
-      if (txData.status == 1) {
-        alert("Transaction has been succesful")
-      } else {
-        alert("Transaction FAILED")
-      }
-    } catch (e) {
-      alert("Transaction has been failed. Please Check Your Input")
-    }
-  }
-
   async function setTransactionLimitContract() {
     try {
       let limit = transactionLimit * 10 **18
@@ -1474,7 +1424,7 @@ function App() {
       });
       const userAddress = accounts[0];
       // console.log(userAddress)
-      const txData = await contract.methods.setTransactionLimit(limit.toString()).send({ from: userAddress });
+      const txData = await contract.methods.setTransactionLimit(limit).send({ from: userAddress });
       if (txData.status == 1) {
         alert("Transaction has been succesful")
       } else {
@@ -1767,16 +1717,6 @@ function App() {
     <input value={taxRate1} onChange={handleSetTaxRate1} className="wide-input" placeholder='Team Tax Rate'/>
     <input value={taxRate2} onChange={handleSetTaxRate2} className="wide-input" placeholder='Dev Tax Rate'/>
     <button onClick={setTaxRateContract} className='button' >setTaxRate</button>
-    <br></br>
-
-    <br></br>
-    <input value={dexRouterAddress} onChange={handleSetDexRouterAddress} className="wide-input" placeholder='Dex Router Address'/>
-    <button onClick={setDexRouterAddressContract} className='button' >setDexRouterAddressContract</button>
-    <br></br>
-
-    <br></br>
-    <input value={dexPairAddress} onChange={handleSetDexPairAddress} className="wide-input" placeholder='Dex Pair Address'/>
-    <button onClick={setDexPairAddressContract} className='button' >setDexPairAddressContract</button>
     <br></br>
 
     <br></br>
