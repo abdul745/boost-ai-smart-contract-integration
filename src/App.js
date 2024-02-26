@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import { AppStyleForHome } from './style';
 
 const web3 = new Web3(window.ethereum);
-const tokenContractAddress = '0x37cc74373a7DC32f8CDcdAe96D2f675B4F07dE05'
-const tokenContractABI = [
+const tokenContractAddress = '0x45E12d4efc0F5F950eF143F0E9f2Aff9Ece1f48b'
+const tokenContractABI =[
   {
     "anonymous": false,
     "inputs": [
@@ -91,6 +91,12 @@ const tokenContractABI = [
         "internalType": "uint256",
         "name": "devTaxRate",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "airdropTaxRate",
+        "type": "uint256"
       }
     ],
     "name": "TaxRateSet",
@@ -109,6 +115,12 @@ const tokenContractABI = [
         "indexed": false,
         "internalType": "address",
         "name": "DEV_WALLET",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "AIRDROP_WALLET",
         "type": "address"
       }
     ],
@@ -195,6 +207,19 @@ const tokenContractABI = [
   {
     "stateMutability": "payable",
     "type": "fallback"
+  },
+  {
+    "inputs": [],
+    "name": "AIRDROP_WALLET",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -285,6 +310,19 @@ const tokenContractABI = [
     "name": "addTaxExemptedAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "airdropTaxRate",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -477,6 +515,11 @@ const tokenContractABI = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -560,8 +603,28 @@ const tokenContractABI = [
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
+        "name": "_airdropTaxRate",
+        "type": "uint256"
+      },
+      {
         "internalType": "address",
         "name": "admin",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_teamWallet",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_devWallet",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_airdropWallet",
         "type": "address"
       }
     ],
@@ -703,32 +766,6 @@ const tokenContractABI = [
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_dexPairAddress",
-        "type": "address"
-      }
-    ],
-    "name": "setDexPairAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_dexRouterAddress",
-        "type": "address"
-      }
-    ],
-    "name": "setDexRouterAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "_maxWalletSize",
         "type": "uint256"
@@ -750,6 +787,11 @@ const tokenContractABI = [
         "internalType": "uint256",
         "name": "_devTaxRate",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_airdropTaxRate",
+        "type": "uint256"
       }
     ],
     "name": "setTaxRate",
@@ -767,6 +809,11 @@ const tokenContractABI = [
       {
         "internalType": "address",
         "name": "_devWallet",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_airdropWallet",
         "type": "address"
       }
     ],
@@ -918,7 +965,7 @@ const tokenContractABI = [
     "type": "receive"
   }
 ]
-const airdropContractAddress = '0x77560D0ca1648F5eD38846454149017BcC876691'
+const airdropContractAddress = '0x3206240f1944Dc0229e2C4165eE395fCbD2bb50E'
 const airdropContractABI = [
   {
     "anonymous": false,
@@ -1075,12 +1122,12 @@ const airdropContractABI = [
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_airdropWallet",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       }
     ],
-    "name": "setAirDropWallet",
+    "name": "setAirdropAmount",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1088,12 +1135,12 @@ const airdropContractABI = [
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "_airdropWallet",
+        "type": "address"
       }
     ],
-    "name": "setAirdropAmount",
+    "name": "setAirdropWallet",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1138,9 +1185,11 @@ function App() {
   const [maxWalletSize, setMaxWalletSize] = useState('');
   const [taxRate1, setTaxRate1] = useState('');
   const [taxRate2, setTaxRate2] = useState('');
+  const [taxRate3, setTaxRate3] = useState('');
   const [transactionLimit, setTransactionLimit] = useState('');
   const [taxReceiver1, setTaxReceiver1] = useState('');
   const [taxReceiver2, setTaxReceiver2] = useState('');
+  const [taxReceiver3, setTaxReceiver3] = useState('');
   const [burnTokens, setBurnTokens] = useState('');
   const [getTaxExemptedAddress, setGetTaxExemptedAddress] = useState('');
   const [getDistributorAddress, setGetDistributorAddress] = useState('');
@@ -1188,6 +1237,10 @@ function App() {
     setTaxRate2(e.target.value);
   };
 
+  const handleSetTaxRate3 = (e) => {
+    setTaxRate3(e.target.value);
+  };
+
   const handleSetTransactionLimit = (e) => {
     setTransactionLimit(e.target.value);
   };
@@ -1195,8 +1248,13 @@ function App() {
   const handleSetTaxReceiver1 = (e) => {
     setTaxReceiver1(e.target.value);
   };
+
   const handleSetTaxReceiver2 = (e) => {
     setTaxReceiver2(e.target.value);
+  };
+
+  const handleSetTaxReceiver3 = (e) => {
+    setTaxReceiver3(e.target.value);
   };
 
   const handleBurnTokens = (e) => {
@@ -1398,6 +1456,8 @@ function App() {
     try {
       let tax1 = Math.round(taxRate1 * 10)
       let tax2 = Math.round(taxRate2 * 10)
+      let tax3 = Math.round(taxRate3 * 10)
+
       console.log(tax1 ,tax2)
       const connect = await connectMetaMask();
       const accounts = await window.ethereum.request({
@@ -1405,7 +1465,7 @@ function App() {
       });
       const userAddress = accounts[0];
       console.log(userAddress)
-      const txData = await contract.methods.setTaxRate(tax1, tax2).send({ from: userAddress });
+      const txData = await contract.methods.setTaxRate(tax1, tax2, tax3).send({ from: userAddress });
       if (txData.status == 1) {
         alert("Transaction has been succesful")
       }
@@ -1446,14 +1506,14 @@ function App() {
 
   async function setTaxReceiverContract() {
     try {
-      console.log(taxReceiver1, taxReceiver2)
+      console.log(taxReceiver1, taxReceiver2 , taxReceiver3)
       const connect = await connectMetaMask();
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
       const userAddress = accounts[0];
       console.log(userAddress)
-      const txData = await contract.methods.setTaxReceiver(taxReceiver1, taxReceiver2).send({ from: userAddress });
+      const txData = await contract.methods.setTaxReceiver(taxReceiver1, taxReceiver2, taxReceiver3).send({ from: userAddress });
       if (txData.status == 1) {
         alert("Transaction has been succesful")
       } else {
@@ -1490,8 +1550,10 @@ function App() {
       const txData = await contract.methods.getTaxRate().call();
       let data1 = parseFloat(txData[0])
       let data2 = parseFloat(txData[1])
+      let data3 = parseFloat(txData[2])
 
-      alert(`The current TEAM Tax Rate is ${data1 / 10} % and current DEV Tax Rate is ${data2 / 10} %`)
+
+      alert(`The current TEAM Tax Rate is ${data1 / 10} %, current DEV Tax Rate is ${data2 / 10} % current Airdrop Tax Rate is ${data3 / 10} %`)
     } catch (e) {
       alert("Transaction has been failed. Please Check Your Input")
     }
@@ -1501,8 +1563,9 @@ function App() {
     try {
       const txData1 = await contract.methods.getTaxRecievers().call();
       const txData2 = await contract.methods.DEV_WALLET().call();
+      const txData3 = await contract.methods.AIRDROP_WALLET().call();
 
-      alert(`The current TEAM Tax Receiver address is ${txData1} and current DEV Tax Receiver address is ${txData2}`)
+      alert(`The current TEAM Tax Receiver address is ${txData1}, current DEV Tax Receiver address is ${txData2} and  current Airdrop Tax Receiver address is ${txData3}`)
     } catch (e) {
       alert("Transaction has been failed. Please Check Your Input")
     }
@@ -1644,7 +1707,7 @@ function App() {
         method: "eth_requestAccounts",
       });
       const userAddress = accounts[0];
-      const txData = await airdropContract.methods.setAirDropWallet(airdropWallet).send({from : userAddress});
+      const txData = await airdropContract.methods.setAirdropWallet(airdropWallet).send({from : userAddress});
       if (txData.status == 1) {
         alert("Transaction has been succesful")
       } else {
@@ -1654,6 +1717,7 @@ function App() {
       alert("Transaction has been failed. Please Check Your Input")
     }
   }
+
 
   return <>
   <AppStyleForHome>
@@ -1716,6 +1780,8 @@ function App() {
     <br></br>
     <input value={taxRate1} onChange={handleSetTaxRate1} className="wide-input" placeholder='Team Tax Rate'/>
     <input value={taxRate2} onChange={handleSetTaxRate2} className="wide-input" placeholder='Dev Tax Rate'/>
+    <input value={taxRate3} onChange={handleSetTaxRate3} className="wide-input" placeholder='Airdrop Tax Rate'/>
+
     <button onClick={setTaxRateContract} className='button' >setTaxRate</button>
     <br></br>
 
@@ -1727,6 +1793,8 @@ function App() {
     <br></br>
     <input value={taxReceiver1} onChange={handleSetTaxReceiver1} className="wide-input" placeholder='Team Tax Receiver Address'/>
     <input value={taxReceiver2} onChange={handleSetTaxReceiver2} className="wide-input" placeholder='Dev Tax Receiver Address'/>
+    <input value={taxReceiver3} onChange={handleSetTaxReceiver3} className="wide-input" placeholder='Airdrop Tax Receiver Address'/>
+
     <button onClick={setTaxReceiverContract} className='button' >setTaxReceiverContract</button>
     <br></br>
 
@@ -1756,8 +1824,8 @@ function App() {
     <br></br>
     <input value={performAirdropAddress} onChange={handlePerformAirdropAmountAddress} className="wide-input" placeholder='Set Airdrop Address'/>
     <button onClick={performAirdropAmountContract} className='button' >Perform Airdrop</button>
-
     <br></br>
+
     </AppStyleForHome>
   </>
 }
