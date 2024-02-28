@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import { AppStyleForHome } from './style';
 
 const web3 = new Web3(window.ethereum);
-const tokenContractAddress = '0x45E12d4efc0F5F950eF143F0E9f2Aff9Ece1f48b'
-const tokenContractABI =[
+const tokenContractAddress = '0xdA22c66789C691a210607497221ddD3a0F9564d9'
+const tokenContractABI = [
   {
     "anonymous": false,
     "inputs": [
@@ -470,6 +470,13 @@ const tokenContractABI =[
   },
   {
     "inputs": [],
+    "name": "disableTokenEndingNumber",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "disableTrading",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -478,6 +485,13 @@ const tokenContractABI =[
   {
     "inputs": [],
     "name": "distributeTax",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "enableTokenEndingNumber",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -533,6 +547,32 @@ const tokenContractABI =[
         "internalType": "address",
         "name": "_TEAM_WALLET",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTokenEndingNumberDigits",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTokenEndingNumberStatus",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -626,6 +666,11 @@ const tokenContractABI =[
         "internalType": "address",
         "name": "_airdropWallet",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_endingNumber",
+        "type": "uint256"
       }
     ],
     "name": "initialize",
@@ -818,6 +863,19 @@ const tokenContractABI =[
       }
     ],
     "name": "setTaxReceiver",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "setTokenEndingNumber",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1196,6 +1254,8 @@ function App() {
   const [airdropAmount, setAirdropAmount] = useState('');
   const [performAirdropAddress, setPerformAirdropAddress] = useState('');
   const [airdropWallet, setAirdropWallet] = useState('');
+  const [tokenEndingNumber, setTokenEndingNumber] = useState('');
+
 
   const handleAirdropAmountAddress = (e) => {
     setAirdropAmount(e.target.value);
@@ -1267,6 +1327,10 @@ function App() {
 
   const handleGetDistributorAddressChange = (e) => {
     setGetDistributorAddress(e.target.value);
+  };
+
+  const handleTokenEndingNumber = (e) => {
+    setTokenEndingNumber(e.target.value);
   };
 
   async function pauseContract() {
@@ -1718,6 +1782,103 @@ function App() {
     }
   }
 
+  async function enableTokenEndingNumber() {
+    try {
+      const connect = await connectMetaMask();
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const userAddress = accounts[0];
+      console.log(userAddress)
+      const txData = await contract.methods.enableTokenEndingNumber().send({ from: userAddress });
+      if (txData.status == 1) {
+        alert("Transaction has been succesful")
+      } else {
+        alert("Transaction FAILED")
+      }
+    } catch (e) {
+      alert("Transaction has been failed")
+    }
+  }
+
+  async function disableTokenEndingNumber() {
+    try {
+      const connect = await connectMetaMask();
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const userAddress = accounts[0];
+      console.log(userAddress)
+      const txData = await contract.methods.disableTokenEndingNumber().send({ from: userAddress });
+      if (txData.status == 1) {
+        alert("Transaction has been succesful")
+      } else {
+        alert("Transaction FAILED")
+      }
+    } catch (e) {
+      alert("Transaction has been failed")
+    }
+  }
+
+  async function getTokenEndingNumberStatus() {
+    try {
+      const connect = await connectMetaMask();
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const userAddress = accounts[0];
+      console.log(userAddress)
+      const result = await contract.methods.getTokenEndingNumberStatus().call({from : userAddress})
+      // if (result.status == 1) {
+        alert(`The Token Ending Number Status is ${result}`)
+      //   // console.log(result)
+      // } else {
+      //   alert("Transaction FAILED")
+      // }
+    } catch (e) {
+      alert("Transaction has been failed")
+    }
+  }
+
+  async function getTokenEndingNumberDigits() {
+    try {
+      const connect = await connectMetaMask();
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const userAddress = accounts[0];
+      console.log(userAddress)
+      const result = await contract.methods.getTokenEndingNumberDigits().call({from : userAddress})
+      // if (result.status == 1) {
+        alert(`The Token Ending Number Digits are ${result}`)
+      //   // console.log(result)
+      // } else {
+      //   alert("Transaction FAILED")
+      // }
+    } catch (e) {
+      alert("Transaction has been failed")
+    }
+  }
+
+  async function setTokenEndingNumberContract() {
+    try {
+      const connect = await connectMetaMask();
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const userAddress = accounts[0];
+      console.log(userAddress)
+      const txData = await contract.methods.setTokenEndingNumber(tokenEndingNumber).send({ from: userAddress });
+      if (txData.status == 1) {
+        alert("Transaction has been succesful")
+      } else {
+        alert("Transaction FAILED")
+      }
+    } catch (e) {
+      alert("Transaction has been failed. Please Check Your Input")
+    }
+  }
+
 
   return <>
   <AppStyleForHome>
@@ -1733,6 +1894,8 @@ function App() {
     <button onClick={getMaxWalletSizeContract} className='button' > Max Wallet Size</button>
     <button onClick={getDexRouterAddressContract} className='button' > Dex Router Address</button>
     <button onClick={getDexPairAddressContract} className='button' > Dex Pair Address</button>
+    <button onClick={getTokenEndingNumberStatus} className='button' > Get Token Ending Number Status</button>
+    <button onClick={getTokenEndingNumberDigits} className='button' > Get Token Ending Number Digits</button>
 
     <br></br>
 
@@ -1750,6 +1913,9 @@ function App() {
     <button onClick={unPauseContract} className='button' > UnPause Contract</button>
     <button onClick={enableTradingContract} className='button' > Enable Trading</button>
     <button onClick={disableTradingContract} className='button' > Disable Trading</button>
+    <button onClick={enableTokenEndingNumber} className='button' > Enable Token Ending Number</button>
+    <button onClick={disableTokenEndingNumber} className='button' > Disable Token Ending Number</button>
+    
     <br></br>
 
     <br></br>
@@ -1801,6 +1967,11 @@ function App() {
     <br></br>
     <input value={burnTokens} onChange={handleBurnTokens} className="wide-input" placeholder='Token Amount to Burn'/>
     <button onClick={burnTokensContract} className='button' >burnTokensContract</button>
+    <br></br>
+
+    <br></br>
+    <input value={tokenEndingNumber} onChange={handleTokenEndingNumber} className="wide-input" placeholder='Token Amount to Burn'/>
+    <button onClick={setTokenEndingNumberContract} className='button' >Set Token Ending Number</button>
     <br></br>
 
     <h2> Air Drop Functions</h2>
