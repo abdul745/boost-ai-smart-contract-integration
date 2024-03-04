@@ -29,14 +29,14 @@ let connectMetaMask = async () => {
         // console.log(ethereum.isConnected())
         let chainId = await ethereum.request({ method: 'eth_chainId' });
         console.log(chainId)
-        if (chainId === "0x13881") {
+        if (chainId === "0x1") {
             if (account) {
                 return true
             } else {
                 return false
             }
         } else {
-            await ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x13881' }] });
+            await ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
             return true
         }
 

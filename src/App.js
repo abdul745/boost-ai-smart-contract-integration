@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { AppStyleForHome } from './style';
 
 const web3 = new Web3(window.ethereum);
-const tokenContractAddress = '0xa915BBa9173848Ed2704577DB8C763b406830C31'
+const tokenContractAddress = '0xEa354337b09E2ce15B9816e19A22C6FD5aFa2cF5'
 const tokenContractABI = [
     {
       "anonymous": false,
@@ -1399,8 +1399,8 @@ function App() {
         method: "eth_requestAccounts",
       });
       const userAddress = accounts[0];
-      // console.log(userAddress)
-      const txData = await contract.methods.enableTrading().send({ from: userAddress });
+      console.log(userAddress)
+      const txData = await contract.methods.enableTrading().send({ from: userAddress, gasLimit : 2200000});
       if (txData.status == 1) {
         alert("Transaction has been succesful")
       } else {
